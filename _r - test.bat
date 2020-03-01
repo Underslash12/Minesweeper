@@ -1,3 +1,0 @@
-java -cp .; test
-pause
-
