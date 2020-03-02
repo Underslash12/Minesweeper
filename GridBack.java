@@ -23,18 +23,19 @@ public class GridBack {
 		grid = new int[h][w];
 		revealed = new boolean[h][w];
 		flagged = new boolean[h][w];
-		// for (int i = 0; i < revealed.length; i++) {
-			// for (int j = 0; j < revealed[0].length; j++) {
-				// revealed[i][j] = false;
-			// }
-		// }
 		gf = new GridFront(w, h);
 		gf.draw();
 	}
 
 	public void generate (int x, int y)
 	{
-		// generates mines
+		generateMines(x, y);
+		fillInTiles(x, y);
+		reveal(x, y);
+	}
+
+	private void generateMines (int x, int y)
+	{
 		for (int i = 0; i < totalMines; i++) {
 			int tempX = (int)(Math.random() * grid[0].length);
 			int tempY = (int)(Math.random() * grid.length);
@@ -49,8 +50,13 @@ public class GridBack {
 
 			grid[tempY][tempX] = -1;
 		}
+	}
 
-		// fills in board
+	// loops through each tile, skipping if
+	// a mine, and summing all surrounding
+	// mines
+	private void fillInTiles (int x, int y)
+	{
 		for (int i = 0; i < grid.length; i++) {
 			for (int j = 0; j < grid[0].length; j++) {
 				if (grid[i][j] == -1) continue;
@@ -66,38 +72,57 @@ public class GridBack {
 				grid[i][j] = bombCount;
 			}
 		}
-
-		// reveals the first click
-		reveal(x, y);
 	}
 
 	public void reveal (int x, int y)
 	{
-		// System.out.print(x + " " + y + " ");
+		// assures that
 		if (gameOver) return;
 
 		// checks if not revealed and within bounds
-		if (x >= 0 && x < grid[0].length && y >= 0 && y < grid.length) {
-			// System.out.println(grid[y][x]);
-			if (!revealed[y][x] && !flagged[y][x]) {
-				if (grid[y][x] == -1) {
-					revealAllBombs();
-				} else if (grid[y][x] == 0) {
-					revealed[y][x] = true;
-					gf.updateTile(x, y, "tileDown");
-					// gf.updateTile(x, y, "" + grid[y][x]);
-					for (int i = y - 1; i < y + 2; i++) {
-						for (int j = x - 1; j < x + 2; j++) {
-							if (i == y && j == x) continue;
-							reveal(j, i);
-						}
-					}
-				} else {
-					revealed[y][x] = true;
-					gf.updateTile(x, y, "tileDown");
-					gf.updateTile(x, y, "" + grid[y][x]);
+		if (
+			(x < 0 || y < 0 || x >= grid[0].length || y >= grid.length) ||
+			(revealed[y][x] || flagged[y][x])) {
+
+			return;
+		}
+
+		// switch (grid[y][x]) {
+		// 	case -1:
+		// 		revealAllBombs();
+		// 		break;
+		// 	case 0:
+		// 		revealed[y][x] = true;
+		// 		gf.updateTile(x, y, "tileDown");
+		// 		for (int i = y - 1; i < y + 2; i++) {
+		// 			for (int j = x - 1; j < x + 2; j++) {
+		// 				if (i == y && j == x) continue;
+		// 				reveal(j, i);
+		// 			}
+		// 		}
+		// 		break;
+		// 	default:
+		// 		revealed[y][x] = true;
+		// 		gf.updateTile(x, y, "tileDown");
+		// 		gf.updateTile(x, y, "" + grid[y][x]);
+		// }
+
+		if (grid[y][x] == -1) {
+			revealAllBombs();
+		} else if (grid[y][x] == 0) {
+			revealed[y][x] = true;
+			gf.updateTile(x, y, "tileDown");
+			// gf.updateTile(x, y, "" + grid[y][x]);
+			for (int i = y - 1; i < y + 2; i++) {
+				for (int j = x - 1; j < x + 2; j++) {
+					if (i == y && j == x) continue;
+					reveal(j, i);
 				}
 			}
+		} else {
+			revealed[y][x] = true;
+			gf.updateTile(x, y, "tileDown");
+			gf.updateTile(x, y, "" + grid[y][x]);
 		}
 	}
 

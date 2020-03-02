@@ -17,18 +17,7 @@ public class test implements InputControl{
 		int width = 13;
 		int height = 13;
 
-		gb = new GridBack(width, height, 30);
-		// gb.print();
-		// gb.generate((int)(Math.random() * width), (int)(Math.random() * height));
-		// System.out.println();
-		// gb.print();
-
-		// p = new Picture(100, 100);
-		// p.grow(2, 2);
-		// p.grow(2, 2);
-		// p.load("icon.png");
-		// Canvas.pause(500);
-		// p.draw();
+		gb = new GridBack(width, height, (int)(width * height * 0.25));
 	}
 
 	public void onMousePress(double x, double y, MouseEvent e)
