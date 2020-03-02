@@ -59,18 +59,18 @@ public class Canvas
 
         public Dimension getPreferredSize()
         {
-            int maxx = MIN_SIZE;
-            int maxy = MIN_SIZE;
-            if (background != null)
-            {
-                maxx = Math.max(maxx, background.getWidth());
-                maxy = Math.max(maxx, background.getHeight());
-            }
-            for (Shape s : shapes)
-            {
-                maxx = (int) Math.max(maxx, s.getX() + s.getWidth());
-                maxy = (int) Math.max(maxy, s.getY() + s.getHeight());
-            }
+            // int maxx = MIN_SIZE;
+            // int maxy = MIN_SIZE;
+            // if (background != null)
+            // {
+            //     maxx = Math.max(maxx, background.getWidth());
+            //     maxy = Math.max(maxx, background.getHeight());
+            // }
+            // for (Shape s : shapes)
+            // {
+            //     maxx = (int) Math.max(maxx, s.getX() + s.getWidth());
+            //     maxy = (int) Math.max(maxy, s.getY() + s.getHeight());
+            // }
 			// changed by Neato to make Canvas the same size (600 x 600)
 			return new Dimension(640,640);
             //return new Dimension(maxx + MARGIN, maxy + MARGIN);
@@ -86,7 +86,7 @@ public class Canvas
         // JPanel panel = new JPanel() {
         // };
 
-        
+
         // component.addComponentListener(new ComponentAdapter() {
         //     @Override
         //     public void componentResized(ComponentEvent e) {
@@ -102,11 +102,13 @@ public class Canvas
         if (!System.getProperty("java.class.path").contains("bluej"))
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // frame.add(panel);
+        // System.out.println(frame.getBounds().getSize());
         frame.add(component);
+        // System.out.println(frame.getContentPane().getBounds().getSize());
         frame.pack();
         //frame.setLocation(LOCATION_OFFSET, LOCATION_OFFSET);
         frame.setVisible(true);
-
+        // System.out.println(frame.getBounds().getSize());
 
         // }
         // else
@@ -133,7 +135,7 @@ public class Canvas
         //                 }
         //             }
         //         };
-        //     watcherThread.start();
+            // watcherThread.start();
         // }
     }
 
@@ -144,7 +146,9 @@ public class Canvas
 
     public Dimension getSize ()
     {
-        return frame.getBounds().getSize();
+        // JComponent c = frame.getContentPane().getComponents()[0];
+        // return new Dimension(c.getWidth(), c.getHeight());
+        return frame.getContentPane().getPreferredSize();
     }
 
     public void show(Shape s)

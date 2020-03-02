@@ -8,14 +8,14 @@ public class test implements InputControl{
 
 	static GridBack gb;
 	static Picture p;
-	static int c = 0;
+	// static int c = 0;
 
 	public static void main(String args[])
 	{
 		MouseController mC = new MouseController(Canvas.getInstance(),new test());
 
-		int width = 10;
-		int height = 10;
+		int width = 13;
+		int height = 13;
 
 		gb = new GridBack(width, height, 30);
 		// gb.print();
@@ -33,18 +33,7 @@ public class test implements InputControl{
 
 	public void onMousePress(double x, double y, MouseEvent e)
 	{
-		// p.grow(2, 2);
-		// p.load("sprites/tileUp.png");
-		if (c == 0) {
-			gb.generate((int)(x / 32), (int)(y / 32));
-		} else {
-		if (SwingUtilities.isLeftMouseButton(e))
-			gb.reveal((int)(x / 32), (int)(y / 32));
-		else if (SwingUtilities.isRightMouseButton(e))
-			gb.flag((int)(x / 32), (int)(y / 32));
-		}
-		c++;
-			// System.out.println("r");
+		gb.handleClickAt(x, y, e);
 	}
 	public void onMouseRelease(double x, double y, MouseEvent e)
 	{
@@ -54,7 +43,7 @@ public class test implements InputControl{
 	public void onMouseDrag(double x, double y, MouseEvent e)
 	{
 		if (SwingUtilities.isLeftMouseButton(e))
-			gb.reveal((int)(x / 32), (int)(y / 32));
+			gb.handleClickAt(x, y, e);
 	}
 	public void onMouseMove(double x, double y, MouseEvent e){}
 	public void onMouseEnter(double x, double y, MouseEvent e){}

@@ -1,10 +1,14 @@
 // GridBack.java
 
 import pkg.*;
+import java.awt.event.MouseEvent;
+import javax.swing.SwingUtilities;
 
 public class GridBack {
 
 	private int totalMines;
+	private boolean firstClick = true;
+	private boolean gameOver = false;
 	// values in grid
 	// 0 to 8 for mines surrounding it
 	// -1 if bomb
@@ -27,14 +31,14 @@ public class GridBack {
 		gf = new GridFront(w, h);
 		gf.draw();
 	}
-	
+
 	public void generate (int x, int y)
 	{
 		// generates mines
 		for (int i = 0; i < totalMines; i++) {
 			int tempX = (int)(Math.random() * grid[0].length);
 			int tempY = (int)(Math.random() * grid.length);
-			
+
 			if (tempX >= x - 1 && tempX <= x + 1 && tempY >= y - 1 && tempY <= y + 1) {
 				i--;
 				continue;
@@ -42,10 +46,10 @@ public class GridBack {
 				i--;
 				continue;
 			}
-			
+
 			grid[tempY][tempX] = -1;
 		}
-		
+
 		// fills in board
 		for (int i = 0; i < grid.length; i++) {
 			for (int j = 0; j < grid[0].length; j++) {
@@ -62,15 +66,16 @@ public class GridBack {
 				grid[i][j] = bombCount;
 			}
 		}
-		
+
 		// reveals the first click
 		reveal(x, y);
 	}
-	
+
 	public void reveal (int x, int y)
 	{
 		// System.out.print(x + " " + y + " ");
-		
+		if (gameOver) return;
+
 		// checks if not revealed and within bounds
 		if (x >= 0 && x < grid[0].length && y >= 0 && y < grid.length) {
 			// System.out.println(grid[y][x]);
@@ -95,9 +100,10 @@ public class GridBack {
 			}
 		}
 	}
-	
+
 	public void revealAllBombs ()
 	{
+		gameOver = true;
 		for (int i = 0; i < grid.length; i++) {
 			for (int j = 0; j < grid[0].length; j++) {
 				if (grid[i][j] == -1) {
@@ -108,15 +114,31 @@ public class GridBack {
 			}
 		}
 	}
-	
+
 	public void flag (int x, int y)
 	{
+		if (gameOver) return;
+
 		if (!revealed[y][x]) {
 			flagged[y][x] = !flagged[y][x];
 			gf.updateTile(x, y, flagged[y][x] ? "flag" : "blankTile");
 		}
 	}
-	
+
+	public void handleClickAt (double x, double y, MouseEvent e)
+	{
+		double t = 16 * gf.getTileWidth();
+		if (firstClick) {
+			generate((int)(x / t), (int)(y / t));
+			firstClick = false;
+		} else {
+			if (SwingUtilities.isLeftMouseButton(e))
+				reveal((int)(x / t), (int)(y / t));
+			else if (SwingUtilities.isRightMouseButton(e))
+				flag((int)(x / t), (int)(y / t));
+		}
+	}
+
 	public void print ()
 	{
 		for (int i = 0; i < grid.length; i++) {
@@ -137,4 +159,3 @@ public class GridBack {
 		}
 	}
 }
-

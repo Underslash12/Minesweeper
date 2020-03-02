@@ -84,12 +84,27 @@ public class GridFront {
 		}
 	}
 
+	public void undraw ()
+	{
+		for (int i = 0; i < layer1.length; i++) {
+			for (int j = 0; j < layer2.length; j++) {
+				layer1[i][j].undraw();
+				layer2[i][j].undraw();
+			}
+		}
+	}
+
+	public double getTileWidth ()
+	{
+		return tileWidth;
+	}
+
 	public void setTileWidth ()
 	{
 		Dimension d = Canvas.getInstance().getSize();
 		double unitTiles = d.getWidth() / 16;
 		tileWidth = unitTiles / layer1[0].length;
-		System.out.println(tileWidth);
+		System.out.println(tileWidth + " " + unitTiles + " " + d.getWidth());
 	}
 
 	public void resize (int px, int py)
