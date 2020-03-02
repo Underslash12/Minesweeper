@@ -14,10 +14,10 @@ public class test implements InputControl{
 	{
 		MouseController mC = new MouseController(Canvas.getInstance(),new test());
 
-		int width = 13;
-		int height = 13;
+		int width = 10;
+		int height = 10;
 
-		gb = new GridBack(width, height, (int)(width * height * 0.25));
+		gb = new GridBackendLooped(width, height, (int)(width * height * 0.2));
 	}
 
 	public void onMousePress(double x, double y, MouseEvent e)

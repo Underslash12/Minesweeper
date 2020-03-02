@@ -6,23 +6,31 @@ import javax.swing.SwingUtilities;
 
 public class GridBack {
 
-	private int totalMines;
-	private boolean firstClick = true;
-	private boolean gameOver = false;
+	protected int totalMines;
+	protected int width;
+	protected int height;
+
+	protected boolean firstClick = true;
+	protected boolean gameOver = false;
 	// values in grid
 	// 0 to 8 for mines surrounding it
 	// -1 if bomb
-	private int[][] grid;
-	private boolean[][] revealed;
-	private boolean[][] flagged;
-	private GridFront gf;
+	protected int[][] grid;
+	protected boolean[][] revealed;
+	protected boolean[][] flagged;
+
+	protected GridFront gf;
 
 	public GridBack (int w, int h, int m)
 	{
 		totalMines = m;
+		width = w;
+		height = h;
+
 		grid = new int[h][w];
 		revealed = new boolean[h][w];
 		flagged = new boolean[h][w];
+
 		gf = new GridFront(w, h);
 		gf.draw();
 	}
@@ -34,11 +42,11 @@ public class GridBack {
 		reveal(x, y);
 	}
 
-	private void generateMines (int x, int y)
+	protected void generateMines (int x, int y)
 	{
 		for (int i = 0; i < totalMines; i++) {
-			int tempX = (int)(Math.random() * grid[0].length);
-			int tempY = (int)(Math.random() * grid.length);
+			int tempX = (int)(Math.random() * width);
+			int tempY = (int)(Math.random() * height);
 
 			if (tempX >= x - 1 && tempX <= x + 1 && tempY >= y - 1 && tempY <= y + 1) {
 				i--;
@@ -55,16 +63,16 @@ public class GridBack {
 	// loops through each tile, skipping if
 	// a mine, and summing all surrounding
 	// mines
-	private void fillInTiles (int x, int y)
+	protected void fillInTiles (int x, int y)
 	{
-		for (int i = 0; i < grid.length; i++) {
-			for (int j = 0; j < grid[0].length; j++) {
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
 				if (grid[i][j] == -1) continue;
 				int bombCount = 0;
 				for (int i3 = i - 1; i3 <= i + 1; i3++) {
-					if (i3 < 0 || i3 >= grid.length) continue;
+					if (i3 < 0 || i3 >= height) continue;
 					for (int j3 = j - 1; j3 <= j + 1; j3++) {
-						if (j3 < 0 || j3 >= grid[0].length) continue;
+						if (j3 < 0 || j3 >= width) continue;
 						// if (i3 == i && j3 == j) continue;
 						if (grid[i3][j3] == -1) bombCount++;
 					}
@@ -81,7 +89,7 @@ public class GridBack {
 
 		// checks if not revealed and within bounds
 		if (
-			(x < 0 || y < 0 || x >= grid[0].length || y >= grid.length) ||
+			(x < 0 || y < 0 || x >= width || y >= height) ||
 			(revealed[y][x] || flagged[y][x])) {
 
 			return;
@@ -109,6 +117,7 @@ public class GridBack {
 
 		if (grid[y][x] == -1) {
 			revealAllBombs();
+			gf.updateTile(x, y, "mineExploded");
 		} else if (grid[y][x] == 0) {
 			revealed[y][x] = true;
 			gf.updateTile(x, y, "tileDown");
@@ -129,8 +138,8 @@ public class GridBack {
 	public void revealAllBombs ()
 	{
 		gameOver = true;
-		for (int i = 0; i < grid.length; i++) {
-			for (int j = 0; j < grid[0].length; j++) {
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
 				if (grid[i][j] == -1) {
 					revealed[i][j] = true;
 					gf.updateTile(j, i, "tileDown");
@@ -166,8 +175,8 @@ public class GridBack {
 
 	public void print ()
 	{
-		for (int i = 0; i < grid.length; i++) {
-			for (int j = 0; j < grid[0].length; j++) {
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
 				if (revealed[i][j]) {
 					if (grid[i][j] == -1) {
 						System.out.print("x ");

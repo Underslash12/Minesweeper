@@ -34,6 +34,7 @@ public class GridFront {
 		images.put("tileDown", new Picture("sprites/tileDown.png").getImage());
 		images.put("blankTile", new Picture("sprites/blankTile.png").getImage());
 		images.put("mine", new Picture("sprites/mine.png").getImage());
+		images.put("mineExploded", new Picture("sprites/mineExploded.png").getImage());
 		images.put("flag", new Picture("sprites/flag.png").getImage());
 		images.put("1", new Picture("sprites/1.png").getImage());
 		images.put("2", new Picture("sprites/2.png").getImage());
@@ -65,6 +66,7 @@ public class GridFront {
 
 	public void updateTile (int x, int y, String val)
 	{
+		// System.out.println(x + " " + y + " " + val);
 		if (val.equals("tileUp") || val.equals("tileDown")) {
 			layer1[y][x].setImage(images.get(val));
 		} else {
