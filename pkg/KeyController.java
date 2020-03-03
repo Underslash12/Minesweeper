@@ -22,9 +22,13 @@ public class KeyController{
 				String c = Character.toString(cc);
                 iC.keyPress(c);
             }
-
 			
-			public void keyReleased(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {
+				char cc = e.getKeyChar();
+				String c = Character.toString(cc);
+                iC.keyRelease(c);
+			}
+			
 			public void keyTyped(KeyEvent e) {}
             
         });

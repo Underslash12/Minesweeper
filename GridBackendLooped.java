@@ -1,14 +1,22 @@
 // GridBackendLooped.java
 
 import pkg.*;
+import java.util.Arrays;
 import java.awt.event.MouseEvent;
 import javax.swing.SwingUtilities;
 
-public class GridBackendLooped extends GridBack {
+public class GridBackendLooped extends GridBack implements InputKeyControl {
+
+	private boolean spaceIsPressed = false;
 
 	public GridBackendLooped (int w, int h, int m)
 	{
 		super(w, h, m);
+		gf.undraw();
+		// gf = new GridFront(w, h);
+		gf = new GridFrontendLooped(w, h);
+		gf.draw();
+		KeyController kC = new KeyController(Canvas.getInstance(), this);
 	}
 
 	@Override
@@ -40,7 +48,7 @@ public class GridBackendLooped extends GridBack {
 					continue check;
 				}
 			}
-			System.out.println();
+			// System.out.println();
 
 			if (grid[tempY][tempX] == -1){
 				i--;
@@ -62,14 +70,7 @@ public class GridBackendLooped extends GridBack {
 				if (grid[i][j] == -1) continue;
 				int bombCount = 0;
 				for (int i3 = i - 1; i3 <= i + 1; i3++) {
-					// if (i3 < 0 || i3 >= height) continue;
 					for (int j3 = j - 1; j3 <= j + 1; j3++) {
-						// if (j3 < 0 || j3 >= width) continue;
-						// if (i3 == i && j3 == j) continue;
-						// int tempX = j3, tempY = i3;
-						// tempX += j3 < 0 ? width : j3 >= width ? -width : 0;
-						// tempY += i3 < 0 ? height : i3 >= height ? -height : 0;
-						// System.out.println(i3 % height + " " + j3 % width);
 						if (grid[(i3 + height) % height][(j3 + width) % width] == -1) bombCount++;
 					}
 				}
@@ -96,28 +97,6 @@ public class GridBackendLooped extends GridBack {
 			return;
 		}
 
-
-
-		// switch (grid[y][x]) {
-		// 	case -1:
-		// 		revealAllBombs();
-		// 		break;
-		// 	case 0:
-		// 		revealed[y][x] = true;
-		// 		gf.updateTile(x, y, "tileDown");
-		// 		for (int i = y - 1; i < y + 2; i++) {
-		// 			for (int j = x - 1; j < x + 2; j++) {
-		// 				if (i == y && j == x) continue;
-		// 				reveal(j, i);
-		// 			}
-		// 		}
-		// 		break;
-		// 	default:
-		// 		revealed[y][x] = true;
-		// 		gf.updateTile(x, y, "tileDown");
-		// 		gf.updateTile(x, y, "" + grid[y][x]);
-		// }
-
 		if (grid[y][x] == -1) {
 			revealAllBombs();
 			gf.updateTile(x, y, "mineExploded");
@@ -138,37 +117,74 @@ public class GridBackendLooped extends GridBack {
 		}
 	}
 
-	// public void handleClickAt (double x, double y, MouseEvent e)
+	// private void shift (int x, int y)
 	// {
-	// 	double t = 16 * gf.getTileWidth();
-	// 	if (firstClick) {
-	// 		generate((int)(x / t), (int)(y / t));
-	// 		firstClick = false;
-	// 	} else {
-	// 		if (SwingUtilities.isLeftMouseButton(e))
-	// 			reveal((int)(x / t), (int)(y / t));
-	// 		else if (SwingUtilities.isRightMouseButton(e))
-	// 			flag((int)(x / t), (int)(y / t));
-	// 	}
+	//
 	// }
 
-	// public void print ()
-	// {
-	// 	for (int i = 0; i < height; i++) {
-	// 		for (int j = 0; j < width; j++) {
-	// 			if (revealed[i][j]) {
-	// 				if (grid[i][j] == -1) {
-	// 					System.out.print("x ");
-	// 				} else if (grid[i][j] == 0) {
-	// 					System.out.print("  ");
-	// 				} else {
-	// 					System.out.print(grid[i][j] + " ");
-	// 				}
-	// 			} else {
-	// 				System.out.print(". ");
-	// 			}
-	// 		}
-	// 		System.out.println();
-	// 	}
-	// }
+	@Override
+	public void onMousePress(double x, double y, MouseEvent e)
+	{
+		if (!spaceIsPressed) {
+			handleClickAt(x, y, e);
+		} else {
+			gf.setPreviousMousePosition(x, y);
+		}
+	}
+
+	@Override
+	public void onMouseDrag(double x, double y, MouseEvent e)
+	{
+		if (!spaceIsPressed) {
+			if (SwingUtilities.isLeftMouseButton(e))
+				handleClickAt(x, y, e);
+		} else {
+			// s
+			int[] vect = gf.willMove(x, y);
+			// if (tx.intValue() != 0) shiftRight(tx.intValue());
+			// if (ty.intValue() != 0) shiftDown(ty.intValue());
+			// for (int[] a : grid) {
+			// 	System.out.println(Arrays.toString(a));
+			// }
+			// System.out.println();
+			// for (Integer[] a : MineUtilities.intMatrixToInteger(grid)) {
+			// 	System.out.println(Arrays.toString(a));
+			// }
+			// System.out.println();
+			Integer[][] tempI = MineUtilities.intMatrixToInteger(grid);
+			Boolean[][] tempA = MineUtilities.booleanMatrixToInteger(revealed);
+			Boolean[][] tempB = MineUtilities.booleanMatrixToInteger(flagged);
+			MineUtilities.shiftMatrix(tempI, vect[0], vect[1]);
+			MineUtilities.shiftMatrix(tempA, vect[0], vect[1]);
+			MineUtilities.shiftMatrix(tempB, vect[0], vect[1]);
+			MineUtilities.setIntFromInt(grid, tempI);
+			MineUtilities.setBoolFromBool(revealed, tempA);
+			MineUtilities.setBoolFromBool(flagged, tempB);
+			// for (int[] a : grid) {
+			// 	System.out.println(Arrays.toString(a));
+			// }
+			// System.out.println();
+			// for (Integer[] a : MineUtilities.intMatrixToInteger(grid)) {
+			// 	System.out.println(Arrays.toString(a));
+			// }
+			// System.out.println();
+			// MineUtilities.shiftMatrix(MineUtilities.booleanMatrixToInteger(revealed), vect[0], vect[1]);
+			// MineUtilities.shiftMatrix(MineUtilities.booleanMatrixToInteger(flagged), vect[0], vect[1]);
+			gf.shift(vect[0], vect[1]);
+		}
+	}
+
+	public void keyPress(String es)
+	{
+		if (es.equals(" ")) {
+			spaceIsPressed = true;
+		}
+	}
+
+	public void keyRelease(String es)
+	{
+		if (es.equals(" ")) {
+			spaceIsPressed = false;
+		}
+	}
 }

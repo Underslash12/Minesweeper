@@ -4,7 +4,7 @@ import pkg.*;
 import java.awt.event.MouseEvent;
 import javax.swing.SwingUtilities;
 
-public class GridBack {
+public class GridBack implements InputControl {
 
 	protected int totalMines;
 	protected int width;
@@ -23,6 +23,7 @@ public class GridBack {
 
 	public GridBack (int w, int h, int m)
 	{
+		MouseController mC = new MouseController(Canvas.getInstance(), this);
 		totalMines = m;
 		width = w;
 		height = h;
@@ -32,7 +33,9 @@ public class GridBack {
 		flagged = new boolean[h][w];
 
 		gf = new GridFront(w, h);
+		// System.out.println("a");
 		gf.draw();
+		// System.out.println("b");
 	}
 
 	public void generate (int x, int y)
@@ -192,4 +195,23 @@ public class GridBack {
 			System.out.println();
 		}
 	}
+
+	public void onMousePress(double x, double y, MouseEvent e)
+	{
+		handleClickAt(x, y, e);
+	}
+	public void onMouseRelease(double x, double y, MouseEvent e)
+	{
+		// p.load(c % 2 == 0 ? "sprites/tileUp.png" : "icon.png");
+		// c = 1 - c;
+	}
+	public void onMouseDrag(double x, double y, MouseEvent e)
+	{
+		if (SwingUtilities.isLeftMouseButton(e))
+			handleClickAt(x, y, e);
+	}
+	public void onMouseMove(double x, double y, MouseEvent e){}
+	public void onMouseEnter(double x, double y, MouseEvent e){}
+	public void onMouseExit(double x, double y, MouseEvent e){}
+	public void onMouseClick(double x, double y, MouseEvent e){}
 }

@@ -8,25 +8,26 @@ import java.awt.Dimension;
 public class GridFront {
 
 	// private Hashtable<String, String> images;
-	private Hashtable<String, BufferedImage> images;
+	protected Hashtable<String, BufferedImage> images;
 	// for tileUp and tileDown
-	private Picture[][] layer1;
+	protected Picture[][] layer1;
 	// for everything else
-	private Picture[][] layer2;
+	protected Picture[][] layer2;
 
-	private double tileWidth;
+	protected double tileWidth;
 
 	public GridFront (int w, int h)
 	{
 		layer1 = new Picture[h][w];
 		layer2 = new Picture[h][w];
-		System.out.println("a");
+		// System.out.println("a");
 		setTileWidth();
-		System.out.println("b");
-		loadImages();
+		// System.out.println("b");
+		createHashTable();
+		createTiles();
 	}
 
-	public void loadImages ()
+	public void createHashTable ()
 	{
 		// images = new Hashtable<String, String>();
 		images = new Hashtable<String, BufferedImage>();
@@ -44,7 +45,10 @@ public class GridFront {
 		images.put("6", new Picture("sprites/6.png").getImage());
 		images.put("7", new Picture("sprites/7.png").getImage());
 		images.put("8", new Picture("sprites/8.png").getImage());
+	}
 
+	public void createTiles ()
+	{
 		Picture p = new Picture();
 		p.setImage(images.get("blankTile"));
 		p.grow(tileWidth, tileWidth);
@@ -106,23 +110,10 @@ public class GridFront {
 		Dimension d = Canvas.getInstance().getSize();
 		double unitTiles = d.getWidth() / 16;
 		tileWidth = unitTiles / layer1[0].length;
-		System.out.println(tileWidth + " " + unitTiles + " " + d.getWidth());
+		// System.out.println(tileWidth + " " + unitTiles + " " + d.getWidth());
 	}
 
-	public void resize (int px, int py)
-	{
-
-	}
-	// public void update (int[][] tileVals, boolean[][] revealed)
-	// {
-		// for (int i = 0; i < tileVals.length; i++) {
-			// for (int j = 0; j < tileVales[0].length; j++) {
-				// if (revealed) {
-
-				// } else {
-
-				// }
-			// }
-		// }
-	// }
+	public void setPreviousMousePosition (double x, double y) {System.out.println("1");}
+	public int[] willMove (double x, double y) {System.out.println("2"); return new int[]{0, 0};}
+	public void shift (int x, int y) {System.out.println("3");}
 }
