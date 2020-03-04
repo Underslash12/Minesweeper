@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.awt.event.MouseEvent;
 import javax.swing.SwingUtilities;
 
-public class GridBackendLooped extends GridBack implements InputKeyControl {
+public class GridBackendLooped extends GridBack {
 
-	private boolean spaceIsPressed = false;
+	private boolean rightClickHeld = false;
 
 	public GridBackendLooped (int w, int h, int m)
 	{
@@ -82,75 +82,53 @@ public class GridBackendLooped extends GridBack implements InputKeyControl {
 	@Override
 	public void reveal (int x, int y)
 	{
-		// assures that
-		if (gameOver) return;
-
-		// x += x < 0 ? width : x >= width ? -width : 0;
-		// y += y < 0 ? height : y >= height ? -height : 0;
 		x = (x + width) % width;
 		y = (y + height) % height;
-		// checks if not revealed and within bounds
-		if (
-			// (x < 0 || y < 0 || x >= width || y >= height) ||
-			(revealed[y][x] || flagged[y][x])) {
 
-			return;
-		}
-
-		if (grid[y][x] == -1) {
-			revealAllBombs();
-			gf.updateTile(x, y, "mineExploded");
-		} else if (grid[y][x] == 0) {
-			revealed[y][x] = true;
-			gf.updateTile(x, y, "tileDown");
-			// gf.updateTile(x, y, "" + grid[y][x]);
-			for (int i = y - 1; i < y + 2; i++) {
-				for (int j = x - 1; j < x + 2; j++) {
-					if (i == y && j == x) continue;
-					reveal(j, i);
-				}
-			}
-		} else {
-			revealed[y][x] = true;
-			gf.updateTile(x, y, "tileDown");
-			gf.updateTile(x, y, "" + grid[y][x]);
-		}
+		super.reveal(x, y);
 	}
 
-	// private void shift (int x, int y)
-	// {
-	//
-	// }
+	@Override
+	public boolean revealPreconditions (int x, int y)
+	{
+		if (gameOver) return false;
+		if (revealed[y][x] || flagged[y][x]) {
+			return false;
+		}
+		return true;
+	}
 
 	@Override
 	public void onMousePress(double x, double y, MouseEvent e)
 	{
-		if (!spaceIsPressed) {
+		if (!rightClickHeld) {
+			if (SwingUtilities.isRightMouseButton(e)) {
+				rightClickHeld = true;
+				gf.setPreviousMousePosition(x, y);
+			}
 			handleClickAt(x, y, e);
-		} else {
-			gf.setPreviousMousePosition(x, y);
+		}
+	}
+
+	@Override
+	public void onMouseRelease(double x, double y, MouseEvent e)
+	{
+		if (rightClickHeld) {
+			if (SwingUtilities.isRightMouseButton(e)) {
+				rightClickHeld = false;
+			}
 		}
 	}
 
 	@Override
 	public void onMouseDrag(double x, double y, MouseEvent e)
 	{
-		if (!spaceIsPressed) {
+		if (!rightClickHeld) {
 			if (SwingUtilities.isLeftMouseButton(e))
 				handleClickAt(x, y, e);
 		} else {
-			// s
+			// does jank to shift grid, revealed, and flagged by a vector
 			int[] vect = gf.willMove(x, y);
-			// if (tx.intValue() != 0) shiftRight(tx.intValue());
-			// if (ty.intValue() != 0) shiftDown(ty.intValue());
-			// for (int[] a : grid) {
-			// 	System.out.println(Arrays.toString(a));
-			// }
-			// System.out.println();
-			// for (Integer[] a : MineUtilities.intMatrixToInteger(grid)) {
-			// 	System.out.println(Arrays.toString(a));
-			// }
-			// System.out.println();
 			Integer[][] tempI = MineUtilities.intMatrixToInteger(grid);
 			Boolean[][] tempA = MineUtilities.booleanMatrixToInteger(revealed);
 			Boolean[][] tempB = MineUtilities.booleanMatrixToInteger(flagged);
@@ -160,31 +138,23 @@ public class GridBackendLooped extends GridBack implements InputKeyControl {
 			MineUtilities.setIntFromInt(grid, tempI);
 			MineUtilities.setBoolFromBool(revealed, tempA);
 			MineUtilities.setBoolFromBool(flagged, tempB);
-			// for (int[] a : grid) {
-			// 	System.out.println(Arrays.toString(a));
-			// }
-			// System.out.println();
-			// for (Integer[] a : MineUtilities.intMatrixToInteger(grid)) {
-			// 	System.out.println(Arrays.toString(a));
-			// }
-			// System.out.println();
-			// MineUtilities.shiftMatrix(MineUtilities.booleanMatrixToInteger(revealed), vect[0], vect[1]);
-			// MineUtilities.shiftMatrix(MineUtilities.booleanMatrixToInteger(flagged), vect[0], vect[1]);
 			gf.shift(vect[0], vect[1]);
 		}
 	}
 
-	public void keyPress(String es)
-	{
-		if (es.equals(" ")) {
-			spaceIsPressed = true;
-		}
-	}
-
-	public void keyRelease(String es)
-	{
-		if (es.equals(" ")) {
-			spaceIsPressed = false;
-		}
-	}
+	// @Override
+	// public void keyPress(String es)
+	// {
+	// 	if (es.equals(" ")) {
+	// 		spaceIsPressed = true;
+	// 	}
+	// }
+	//
+	// @Override
+	// public void keyRelease(String es)
+	// {
+	// 	if (es.equals(" ")) {
+	// 		spaceIsPressed = false;
+	// 	}
+	// }
 }

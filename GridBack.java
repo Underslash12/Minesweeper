@@ -4,7 +4,7 @@ import pkg.*;
 import java.awt.event.MouseEvent;
 import javax.swing.SwingUtilities;
 
-public class GridBack implements InputControl {
+public class GridBack implements InputControl, InputKeyControl {
 
 	protected int totalMines;
 	protected int width;
@@ -87,16 +87,17 @@ public class GridBack implements InputControl {
 
 	public void reveal (int x, int y)
 	{
+		if (!revealPreconditions(x, y)) return;
 		// assures that
-		if (gameOver) return;
-
-		// checks if not revealed and within bounds
-		if (
-			(x < 0 || y < 0 || x >= width || y >= height) ||
-			(revealed[y][x] || flagged[y][x])) {
-
-			return;
-		}
+		// if (gameOver) return;
+		//
+		// // checks if not revealed and within bounds
+		// if (
+		// 	(x < 0 || y < 0 || x >= width || y >= height) ||
+		// 	(revealed[y][x] || flagged[y][x])) {
+		//
+		// 	return;
+		// }
 
 		// switch (grid[y][x]) {
 		// 	case -1:
@@ -136,6 +137,23 @@ public class GridBack implements InputControl {
 			gf.updateTile(x, y, "tileDown");
 			gf.updateTile(x, y, "" + grid[y][x]);
 		}
+
+
+	}
+
+	public boolean revealPreconditions (int x, int y)
+	{
+		if (gameOver) return false;
+
+		// checks if not revealed and within bounds
+		if (
+			(x < 0 || y < 0 || x >= width || y >= height) ||
+			(revealed[y][x] || flagged[y][x])) {
+
+			return false;
+		}
+
+		return true;
 	}
 
 	public void revealAllBombs ()
@@ -205,13 +223,17 @@ public class GridBack implements InputControl {
 		// p.load(c % 2 == 0 ? "sprites/tileUp.png" : "icon.png");
 		// c = 1 - c;
 	}
+
 	public void onMouseDrag(double x, double y, MouseEvent e)
 	{
 		if (SwingUtilities.isLeftMouseButton(e))
 			handleClickAt(x, y, e);
 	}
+
 	public void onMouseMove(double x, double y, MouseEvent e){}
 	public void onMouseEnter(double x, double y, MouseEvent e){}
 	public void onMouseExit(double x, double y, MouseEvent e){}
 	public void onMouseClick(double x, double y, MouseEvent e){}
+	public void keyPress(String es){}
+	public void keyRelease(String es){}
 }
