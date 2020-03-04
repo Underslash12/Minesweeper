@@ -12,8 +12,8 @@ public class test {
 
 	public static void main(String args[])
 	{
-		int width = 12;
-		int height = 12;
+		int width = 6;
+		int height = 6;
 
 		gb = new GridBackendLooped(width, height, (int)(width * height * 0.18));
 	}

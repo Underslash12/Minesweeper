@@ -88,36 +88,6 @@ public class GridBack implements InputControl, InputKeyControl {
 	public void reveal (int x, int y)
 	{
 		if (!revealPreconditions(x, y)) return;
-		// assures that
-		// if (gameOver) return;
-		//
-		// // checks if not revealed and within bounds
-		// if (
-		// 	(x < 0 || y < 0 || x >= width || y >= height) ||
-		// 	(revealed[y][x] || flagged[y][x])) {
-		//
-		// 	return;
-		// }
-
-		// switch (grid[y][x]) {
-		// 	case -1:
-		// 		revealAllBombs();
-		// 		break;
-		// 	case 0:
-		// 		revealed[y][x] = true;
-		// 		gf.updateTile(x, y, "tileDown");
-		// 		for (int i = y - 1; i < y + 2; i++) {
-		// 			for (int j = x - 1; j < x + 2; j++) {
-		// 				if (i == y && j == x) continue;
-		// 				reveal(j, i);
-		// 			}
-		// 		}
-		// 		break;
-		// 	default:
-		// 		revealed[y][x] = true;
-		// 		gf.updateTile(x, y, "tileDown");
-		// 		gf.updateTile(x, y, "" + grid[y][x]);
-		// }
 
 		if (grid[y][x] == -1) {
 			revealAllBombs();
@@ -138,7 +108,7 @@ public class GridBack implements InputControl, InputKeyControl {
 			gf.updateTile(x, y, "" + grid[y][x]);
 		}
 
-
+		checkIfWon();
 	}
 
 	public boolean revealPreconditions (int x, int y)
@@ -159,6 +129,7 @@ public class GridBack implements InputControl, InputKeyControl {
 	public void revealAllBombs ()
 	{
 		gameOver = true;
+
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				if (grid[i][j] == -1) {
@@ -167,6 +138,28 @@ public class GridBack implements InputControl, InputKeyControl {
 					gf.updateTile(j, i, "mine");
 				}
 			}
+		}
+
+		System.out.println("You hit a mine! Oops...");
+	}
+
+	public void checkIfWon ()
+	{
+		boolean won = true;
+
+		outerLoop:
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				if (grid[i][j] >= 0 && !revealed[i][j]) {
+					won = false;
+					break outerLoop;
+				}
+			}
+		}
+
+		if (won) {
+			gameOver = true;
+			System.out.println("You won!");
 		}
 	}
 
